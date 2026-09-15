@@ -1,0 +1,13 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+allure-results/
+allure-report/
+*.pyc
+.idea/
+
+# Local migration / backup files
+old_project_backup/
+new_project/
+GridBridge_Smart_Meter_QA_Complete.zip

@@ -1,0 +1,11 @@
+CREATE DATABASE IF NOT EXISTS smart_meter_qa;
+USE smart_meter_qa;
+CREATE TABLE IF NOT EXISTS meters (id INT AUTO_INCREMENT PRIMARY KEY, logical_name VARCHAR(64) NOT NULL, serial_number VARCHAR(64) NOT NULL UNIQUE, manufacturer VARCHAR(128) NOT NULL, status VARCHAR(20) NOT NULL);
+CREATE TABLE IF NOT EXISTS meter_readings (id INT AUTO_INCREMENT PRIMARY KEY, meter_id INT NOT NULL, obis_code VARCHAR(32) NOT NULL, value DECIMAL(14,3) NOT NULL, unit VARCHAR(20), reading_time DATETIME NOT NULL, FOREIGN KEY (meter_id) REFERENCES meters(id));
+CREATE TABLE IF NOT EXISTS meter_events (id INT AUTO_INCREMENT PRIMARY KEY, meter_id INT NOT NULL, event_type VARCHAR(64) NOT NULL, event_time DATETIME NOT NULL, FOREIGN KEY (meter_id) REFERENCES meters(id));
+INSERT IGNORE INTO meters (logical_name,serial_number,manufacturer,status) VALUES ('DEV61594','MTR-61594','NorthGrid Instruments','ONLINE');
+SET @meter_id=(SELECT id FROM meters WHERE serial_number='MTR-61594');
+INSERT INTO meter_readings (meter_id,obis_code,value,unit,reading_time) SELECT @meter_id,'1.8.0',1250.750,'kWh',NOW() WHERE NOT EXISTS (SELECT 1 FROM meter_readings WHERE meter_id=@meter_id AND obis_code='1.8.0');
+INSERT INTO meter_events (meter_id,event_type,event_time) SELECT @meter_id,'SUPPLY_LOST',NOW() WHERE NOT EXISTS (SELECT 1 FROM meter_events WHERE meter_id=@meter_id AND event_type='SUPPLY_LOST');
+INSERT INTO meter_events (meter_id,event_type,event_time) SELECT @meter_id,'SUPPLY_RESTORED',NOW() WHERE NOT EXISTS (SELECT 1 FROM meter_events WHERE meter_id=@meter_id AND event_type='SUPPLY_RESTORED');
+INSERT INTO meter_events (meter_id,event_type,event_time) SELECT @meter_id,'ENCLOSURE_TAMPER',NOW() WHERE NOT EXISTS (SELECT 1 FROM meter_events WHERE meter_id=@meter_id AND event_type='ENCLOSURE_TAMPER');

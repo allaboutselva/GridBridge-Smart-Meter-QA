@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+mysql-connector-python
+python-dotenv
+PyJWT
+requests
+pytest
+allure-pytest
